@@ -25,6 +25,14 @@ def chose_day(date, filename):
             if printing:
                 print(line)
                 notes.append(line)
+    if printing == False:
+        with open(filename, "a", encoding="utf-8") as file:
+            file.write(f"=== {date[0]}-{int(date[1]):02d}-{int(date[2]):02d} ===\n")
+            file.write("==================\n")
+            print("Date not found, was added")
+            print(f"=== {date[0]}-{int(date[1]):02d}-{int(date[2]):02d} ===")
+            print("==================")
+            notes.append(date_str)
     return notes
 
 def write_task(day_notes, filename, new_note, time, date):
@@ -72,7 +80,7 @@ def write_task(day_notes, filename, new_note, time, date):
 filename = "tasks_for_days.txt"
 print("Hello! This is to-do-app!\nPlease chose option:")
 print("1 - chose day to open or add.\n2 - open to do list for today.\n3 - write task for today.\n4 - close app")
-print(datetime.now())
+print(str(datetime.date(datetime.now())).split('-'))
 command = input()
 while command != Command.CLOSE:
     match command:
@@ -84,7 +92,7 @@ while command != Command.CLOSE:
             option = input()
             while option != '2':
                 if option == "1":
-                    print("Write what time to add a note (HH:MM - HH:MM)")
+                    print("Write what time to add a note (HH:MM-HH:MM)")
                     user_time = input().split("-")
                     print("Write your note for this time")
                     new_note = input()
@@ -98,10 +106,17 @@ while command != Command.CLOSE:
             print("1 - chose day to open or add.\n2 - open to do list for today.\n3 - write task for today.\n4 - close app")
             command = input()
         case Command.READ_TODAY:
-            print(2)
+            today = str(datetime.date(datetime.now())).split('-')
+            chose_day(today, filename)
             print("1 - chose day to open or add.\n2 - open to do list for today.\n3 - write task for today.\n4 - close app")
             command = input()
         case Command.WRITE_TODAY:
-            print(3)
+            today = str(datetime.date(datetime.now())).split('-')
+            notes = chose_day(today, filename)
+            print("Write what time to add a note (HH:MM-HH:MM)")
+            user_time = input().split("-")
+            print("Write your note for this time")
+            new_note = input()
+            write_task(notes, filename, new_note, user_time,today)
             print("1 - chose day to open or add.\n2 - open to do list for today.\n3 - write task for today.\n4 - close app")
             command = input()
