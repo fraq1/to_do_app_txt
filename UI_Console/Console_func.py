@@ -1,5 +1,22 @@
+from UI_Console.UserInputErrors import InvalidChoice
+
 
 class Console:
+
+    def ask_valid_command(self, valid_commands):
+        while True:
+            try:
+                command = self.ask_user_command()
+                return self.check_user_input(command, valid_commands.return_attrs())
+            except InvalidChoice as e:
+                self.write_error(str(e))
+
+
+    def check_user_input(self,user_input, valid_inputs: list[str]) -> str:
+        user_input = user_input.strip()
+        if user_input not in valid_inputs:
+            raise InvalidChoice(user_input, valid_inputs)
+        return user_input
 
     def print_hello_line(self):
         print("Hello! This is to-do-app!\nPlease chose option:")
@@ -35,3 +52,9 @@ class Console:
         for line in notes:
             print(line)
         print("==================\n")
+
+    def write_overlaps_error(self, user_note_time, existed_note_time):
+        print(f"{user_note_time} overlaps with {existed_note_time}")
+
+    def write_error(self, error_text):
+        print(error_text)
