@@ -6,6 +6,21 @@ from Business_logic.LogicErrors import TimeOverlapseError, InputFormatError
 class TxtLogic:
     storage = TxtStorage()
 
+    def validate_time(self, raw_time):
+        fmt = "%H:%M"
+        parse_time = raw_time.split("-")
+        if len(parse_time) != 2:
+            raise InputFormatError(raw_time, "HH:MM-HH:MM")
+        try:
+            user_start_time = datetime.strptime(parse_time[0], fmt).time()
+            user_end_time = datetime.strptime(parse_time[1], fmt).time()
+        except Exception:
+            raise InputFormatError(raw_time, "HH:MM-HH:MM")
+        if user_start_time >= user_end_time:
+            raise InputFormatError(f"{parse_time[0]}-{parse_time[1]}", "start time must be earlier than end time")
+
+
+
     def validate_date(self, raw_date):
         try:
             year,month,day = map(int, raw_date.split())
@@ -40,16 +55,8 @@ class TxtLogic:
     def find_insert_index(self, day_notes, time):
         fmt = "%H:%M"
         parse_time = time.split("-")
-        if len(parse_time) != 2:
-            raise InputFormatError(time, "HH:MM-HH:MM")
-        try:
-            user_start_time = datetime.strptime(parse_time[0], fmt).time()
-            user_end_time = datetime.strptime(parse_time[1], fmt).time()
-        except Exception:
-            raise InputFormatError(time, "HH:MM-HH:MM")
-        if user_start_time >= user_end_time:
-            raise InputFormatError(f"{parse_time[0]}-{parse_time[1]}", "start time must be earlier than end time")
-
+        user_start_time = datetime.strptime(parse_time[0], fmt).time()
+        user_end_time = datetime.strptime(parse_time[1], fmt).time()
         for i in range(1, len(day_notes)):
             time_notes = day_notes[i].split()[0].split("-")
             notes_end_time = datetime.strptime(time_notes[1], fmt).time()
@@ -74,4 +81,30 @@ class TxtLogic:
         all_file = self.storage.read_all_file(filename)
         start_index, end_index = self.find_indexes(all_file, date_str)
         all_file[start_index:end_index] = [i + "\n" for i in new_day_notes]
+        self.storage.write_all_lines(filename, all_file)
+
+    def edit_notes_text(self, note_index, filename, new_note, date):
+        date_str = f"=== {date[0]}-{date[1]}-{date[2]} ==="
+        notes =self.storage.read_day(filename,date_str)
+        old_note_time = notes[note_index].split(maxsplit=1)[0]
+        notes[note_index] = f"{old_note_time} {new_note}"
+        all_file = self.storage.read_all_file(filename)
+        start_index,end_index = self.find_indexes(all_file, date_str)
+        all_file[start_index:end_index] = [i + "\n" for i in notes]
+        self.storage.write_all_lines(filename, all_file)
+
+    def edit_notes_time(self, note_index, filename, new_time, date, insert_pose, day_notes):
+        date_str = f"=== {date[0]}-{date[1]}-{date[2]} ==="
+        notes =self.storage.read_day(filename,date_str)
+        old_note_text = notes[note_index].split(maxsplit=1)[1]
+        self.write_notes(insert_pose,filename, old_note_text, new_time, date, day_notes)
+
+
+    def delete_note(self, note_index, filename, date):
+        date_str = f"=== {date[0]}-{date[1]}-{date[2]} ==="
+        notes =self.storage.read_day(filename,date_str)
+        notes.pop(note_index)
+        all_file = self.storage.read_all_file(filename)
+        start_index,end_index = self.find_indexes(all_file, date_str)
+        all_file[start_index:end_index] = [i + "\n" for i in notes]
         self.storage.write_all_lines(filename, all_file)

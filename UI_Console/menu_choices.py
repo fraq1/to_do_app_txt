@@ -15,4 +15,7 @@ class MainCommand(_BaseMenu):
 
 class NotesCommand(_BaseMenu):
     WRITE = '1'
-    BACK = '2'
+    EDIT_TEXT = '2'
+    EDIT_TIME = '3'
+    DELETE = '4'
+    BACK = '5'

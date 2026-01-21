@@ -30,3 +30,9 @@ class TxtStorage:
     def write_all_lines(self, filename, all_file):
         with open(filename, "w", encoding="utf-8") as file:
             file.writelines(all_file)
+
+
+
+#class JSON_Storage:
+
+    #def read_day(self):
