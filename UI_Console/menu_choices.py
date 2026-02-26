@@ -19,3 +19,7 @@ class NotesCommand(_BaseMenu):
     EDIT_TIME = '3'
     DELETE = '4'
     BACK = '5'
+
+class StorageCommand():
+    JSON = '1'
+    TXT = '2'
