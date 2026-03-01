@@ -5,7 +5,7 @@ from copy import copy
 from Business_logic.Models.Note import Note
 from Business_logic.LogicErrors import TimeOverlapseError, InputFormatError
 
-class JsonLogic:
+class BusinessLogic:
     def __init__(self, storage):
         self.storage = storage
 
@@ -76,7 +76,7 @@ class JsonLogic:
         all_file[day_date] = notes
         self.storage.write_all_lines(all_file)
 
-    def edit_notes_time(self, note_index, new_time, day_date, insert_pose, day_notes):
+    def edit_notes_time(self, note_index, new_time, day_date, day_notes):
         notes =self.storage.read_day(day_date)
         old_note_text = notes[note_index].text
         insert_pose = self.find_insert_index(day_notes, new_time)
@@ -91,6 +91,7 @@ class JsonLogic:
         self.storage.write_all_lines(all_file)
 
     def migrate_notes(self, old_storage: JsonStorage | TxtStorage, new_storage: JsonStorage | TxtStorage):
+        old_storage.check_changes()
         log_for_migrated_notes = {}
         old_notes = old_storage.read_all_file()
         new_notes = new_storage.read_all_file()

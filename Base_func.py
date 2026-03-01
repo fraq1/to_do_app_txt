@@ -1,5 +1,4 @@
-from random import choice
-from Business_logic.Buisness_logic_json import JsonLogic
+from Business_logic.Business_logic import BusinessLogic
 from Storage_logic.Json_logic import JsonStorage
 from Storage_logic.txt_logic import TxtStorage
 from UI_Console.Console_func import Console
@@ -19,7 +18,7 @@ def ask_storage(console):
 Console = Console()
 Console.print_hello_line()
 storage, old_storage = ask_storage(Console)
-logic = JsonLogic(storage)
+logic = BusinessLogic(storage)
 log_for_migrated = logic.migrate_notes(old_storage, storage)
 Console.print_log_migrated(log_for_migrated)
 Console.print_user_main_choice()

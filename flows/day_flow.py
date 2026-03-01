@@ -16,7 +16,7 @@ def handle_day(console, logic, date):
             logic.edit_notes_text(user_note_edit, new_note, date)
             option = console.choose_note_action(notes)
 
-        if option == NotesCommand.WRITE:
+        elif option == NotesCommand.WRITE:
             notes = logic.chose_or_create_day(date)
             insert_pos, user_time = get_valid_time(console, logic, notes)
             console.print_user_note()
@@ -25,16 +25,16 @@ def handle_day(console, logic, date):
             notes = logic.chose_or_create_day(date)
             option = console.choose_note_action(notes)
 
-        if option == NotesCommand.EDIT_TIME:
+        elif option == NotesCommand.EDIT_TIME:
             notes = logic.chose_or_create_day(date)
             console.print_user_note_time_for_edit(notes)
             user_note_edit = int(console.ask_valid_input(list(range(1,len(notes)+1)))) - 1
             notes_without_edited = notes[:user_note_edit] + notes[user_note_edit + 1:]
             insert_pos, user_time = get_valid_time(console, logic, notes_without_edited)
-            logic.edit_notes_time(user_note_edit, user_time, date, insert_pos, notes_without_edited)
+            logic.edit_notes_time(user_note_edit, user_time, date, notes_without_edited)
             option = console.choose_note_action(notes)
 
-        if option == NotesCommand.DELETE:
+        elif option == NotesCommand.DELETE:
             notes = logic.chose_or_create_day(date)
             console.print_user_note_for_delete(notes)
             user_note_delete = int(console.ask_valid_input(list(range(1,len(notes)+1)))) - 1
