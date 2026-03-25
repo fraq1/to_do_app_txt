@@ -1,7 +1,10 @@
 from UI_Console.menu_choices import NotesCommand
 from Business_logic.LogicErrors import TimeOverlapseError, InputFormatError
+from UI_Console.Console_func import Console
+from Business_logic.Business_logic import BusinessLogic
+from Business_logic.Models.Note import Note
 
-def handle_day(console, logic, date):
+def handle_day(console: Console, logic: BusinessLogic, date: str):
     notes = logic.chose_or_create_day(date)
     console.print_notes(notes, date)
     option = console.choose_note_action(notes)
@@ -43,7 +46,7 @@ def handle_day(console, logic, date):
             option = console.choose_note_action(notes)
 
 
-def get_valid_date(console, logic):
+def get_valid_date(console: Console, logic: BusinessLogic):
     while True:
         try:
             console.ask_date()
@@ -53,7 +56,7 @@ def get_valid_date(console, logic):
         except InputFormatError as e:
             console.write_error(str(e))
 
-def get_valid_time(console, logic, notes):
+def get_valid_time(console: Console, logic: BusinessLogic, notes: list[Note]):
     while True:
         console.print_ask_time()
         user_time = console.ask_user_command()

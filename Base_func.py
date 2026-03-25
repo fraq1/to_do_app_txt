@@ -5,7 +5,7 @@ from UI_Console.Console_func import Console
 from UI_Console.menu_choices import MainCommand, StorageCommand
 from flows.day_flow import handle_day,get_valid_date
 
-def ask_storage(console):
+def ask_storage(console: Console) -> (JsonStorage|TxtStorage, JsonStorage|TxtStorage):
     choice = console.ask_storage_choice()
     if choice == StorageCommand.JSON:
         storage = JsonStorage()

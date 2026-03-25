@@ -1,6 +1,6 @@
 class _BaseMenu:
     @classmethod
-    def return_attrs(cls):
+    def return_attrs(cls) -> list:
         values = list()
         for attr_name, value in cls.__dict__.items():
             if not attr_name.startswith("_"):
