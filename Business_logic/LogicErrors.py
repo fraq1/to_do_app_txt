@@ -9,4 +9,4 @@ class InputFormatError(Exception):
     def __init__(self, user_input: str, expected_format: str) -> None:
         self.user_input = user_input
         self.expected_format = expected_format
-        super().__init__(f"{user_input} - user input, but a string in the format was expected - {expected_format}")
+        super().__init__(f"{user_input} - user input, Error:{expected_format}")

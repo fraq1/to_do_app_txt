@@ -16,15 +16,15 @@ def handle_day(console: Console, logic: BusinessLogic, date: str):
             user_note_edit = int(console.ask_valid_input(list(range(1,len(notes)+1)))) - 1
             console.print_user_note()
             new_note = console.ask_user_command()
-            logic.edit_notes_text(user_note_edit, new_note, date)
+            logic.edit_notes_text(notes[user_note_edit].note_id, new_note)
             option = console.choose_note_action(notes)
 
         elif option == NotesCommand.WRITE:
             notes = logic.chose_or_create_day(date)
-            insert_pos, user_time = get_valid_time(console, logic, notes)
+            user_time = get_valid_time(console, logic, notes)
             console.print_user_note()
             new_note = console.ask_user_command()
-            logic.write_notes(insert_pos, new_note, user_time, date, notes)
+            logic.write_notes(new_note, user_time, date)
             notes = logic.chose_or_create_day(date)
             option = console.choose_note_action(notes)
 
@@ -33,15 +33,15 @@ def handle_day(console: Console, logic: BusinessLogic, date: str):
             console.print_user_note_time_for_edit(notes)
             user_note_edit = int(console.ask_valid_input(list(range(1,len(notes)+1)))) - 1
             notes_without_edited = notes[:user_note_edit] + notes[user_note_edit + 1:]
-            insert_pos, user_time = get_valid_time(console, logic, notes_without_edited)
-            logic.edit_notes_time(user_note_edit, user_time, date, notes_without_edited)
+            user_time = get_valid_time(console, logic, notes_without_edited)
+            logic.edit_notes_time(notes[user_note_edit].note_id, user_time)
             option = console.choose_note_action(notes)
 
         elif option == NotesCommand.DELETE:
             notes = logic.chose_or_create_day(date)
             console.print_user_note_for_delete(notes)
             user_note_delete = int(console.ask_valid_input(list(range(1,len(notes)+1)))) - 1
-            logic.delete_note(user_note_delete, date)
+            logic.delete_note(notes[user_note_delete].note_id)
             notes = logic.chose_or_create_day(date)
             option = console.choose_note_action(notes)
 
@@ -61,9 +61,9 @@ def get_valid_time(console: Console, logic: BusinessLogic, notes: list[Note]):
         console.print_ask_time()
         user_time = console.ask_user_command()
         try:
-            logic.validate_time(user_time)
-            insert_pos = logic.find_insert_index(notes, user_time)
-            return insert_pos, user_time
+            valid_user_time = logic.validate_time(user_time)
+            logic.check_valid_time(notes, user_time)
+            return valid_user_time
         except TimeOverlapseError as e:
             console.write_overlaps_error(e.new_note_time, e.existed_note_time)
         except InputFormatError as e:

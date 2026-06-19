@@ -69,3 +69,6 @@ class TxtStorage(Storage):
             with open(self._filename, "w", encoding="utf-8") as file:
                 file.writelines(backup)
             self.save_to_backup_file(backup)
+
+    def close(self):
+        pass

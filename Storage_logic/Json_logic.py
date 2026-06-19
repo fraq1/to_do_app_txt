@@ -51,3 +51,6 @@ class JsonStorage(Storage):
             with open(self._filename, "w", encoding="utf-8") as file:
                 json.dump(backup, file, indent=4, ensure_ascii=False)
             self.save_to_backup_file(backup)
+
+    def close(self):
+        pass

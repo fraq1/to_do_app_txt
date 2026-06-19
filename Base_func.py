@@ -1,26 +1,15 @@
 from Business_logic.Business_logic import BusinessLogic
 from Storage_logic.Json_logic import JsonStorage
 from Storage_logic.txt_logic import TxtStorage
+from Storage_logic_v2.SQLite_logic import SQLiteDB
 from UI_Console.Console_func import Console
 from UI_Console.menu_choices import MainCommand, StorageCommand
 from flows.day_flow import handle_day,get_valid_date
 
-def ask_storage(console: Console) -> (JsonStorage|TxtStorage, JsonStorage|TxtStorage):
-    choice = console.ask_storage_choice()
-    if choice == StorageCommand.JSON:
-        storage = JsonStorage()
-        old_storage = TxtStorage()
-    else:
-        storage = TxtStorage()
-        old_storage = JsonStorage()
-    return storage, old_storage
-
 Console = Console()
 Console.print_hello_line()
-storage, old_storage = ask_storage(Console)
+storage = SQLiteDB()
 logic = BusinessLogic(storage)
-log_for_migrated = logic.migrate_notes(old_storage, storage)
-Console.print_log_migrated(log_for_migrated)
 Console.print_user_main_choice()
 command = Console.ask_valid_input(MainCommand.return_attrs())
 while command != MainCommand.CLOSE:
@@ -42,6 +31,5 @@ while command != MainCommand.CLOSE:
             Console.print_user_main_choice()
             command = Console.ask_valid_input(MainCommand.return_attrs())
 
-
-
+storage.close()
 

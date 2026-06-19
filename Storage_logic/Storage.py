@@ -34,3 +34,6 @@ class Storage:
         with open(self._filename_hash, "r") as file:
             saved_hash = file.read()
         return current_hash != saved_hash
+
+    def close(self):
+        pass
