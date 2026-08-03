@@ -1,70 +1,80 @@
 # To-Do App
 
-A Python task manager with shared business logic and **two separate project versions** in one repository.
+Task manager project with **two real versions** of the product:
+- **Console app** (classic CLI flow)
+- **Telegram bot** (aiogram + SQLite, in a separate branch)
 
-## Project Versions
+---
 
-### 1) Console Version
-- Location: `Base_func.py`, `UI_Console/`, `flows/`
-- Type: interactive CLI app
-- Best for: local personal use from terminal
+## 1) Console Version
 
-Run:
+**Branch:** current/main line  
+**Entry point:** `Base_func.py`
+
+### What it does
+- Opens a day and manages notes for that date
+- Adds, edits, and deletes tasks with time intervals
+- Validates date/time input and prevents overlapping tasks
+- Supports migration between TXT and JSON storage
+
+### Storage in console version
+- `Storage_logic/Json_logic.py` → JSON (`tasks_for_days.json`)
+- `Storage_logic/txt_logic.py` → TXT (`tasks_for_days.txt`)
+- `Storage_logic/Storage.py` adds:
+  - backup files (`.bac`)
+  - integrity hash files (`.hash`)
+  - auto-restore from backup when file hash changes
+
+### Run console
 ```bash
 python Base_func.py
 ```
 
-### 2) API Version
-- Location: `FastApi/todo_api.py`
-- Type: HTTP API built with FastAPI
-- Best for: integrations and external clients
+---
 
+## 2) Telegram Bot Version
+
+**Branch:** `sqlite-refactoring`  
+**Entry point:** `UI_tg_bot/main.py`
+
+### What it does
+- Telegram UI for daily planning
+- Date selection via keyboard (`Today`, `Tomorrow`, manual date input)
+- Create, edit text/time, and delete notes via bot dialogs
+- Uses middleware and FSM states for safe conversational flow
+
+### Main bot modules
+- `UI_tg_bot/Handlers/` — `/start`, date flow, note flow handlers
+- `UI_tg_bot/Keyboards/` — reply + inline keyboards
+- `UI_tg_bot/Middlewares/` — auth guard and selected-date guard
+- `UI_tg_bot/Cache/User_cache.py` — in-memory per-user state
+- `UI_tg_bot/Output_validators/normalize_output.py` — formatted note output
+
+### Storage in bot version
+- `Storage_logic_v2/SQLite_logic.py`
+- SQLite tables: `users`, `dates`, `notes`
+- User-scoped notes via Telegram ID
+
+### Run Telegram bot (`sqlite-refactoring`)
+```bash
+pip install -r requirements.txt
+```
+Create `.env` in repository root:
+```env
+BOT_TOKEN=your_telegram_bot_token
+```
 Run:
 ```bash
-uvicorn FastApi.todo_api:app --reload
+python UI_tg_bot/main.py
 ```
 
-## Core Features
+---
 
-- Create, view, edit, and delete tasks by date
-- Time-range scheduling with overlap validation
-- Two storage formats: **JSON** and **TXT**
-- Migration between storage formats
-- Automatic backup (`.bac`) and integrity hash (`.hash`)
+## Shared Core Logic
 
-## Architecture
+Both versions rely on `Business_logic/` for:
+- date/time validation
+- overlap checks
+- note operations
 
-The two versions share the same core layers:
-
-- `Business_logic/` — validation, task rules, CRUD operations
-- `Storage_logic/` — file storage, backup, integrity checks
-- `Business_logic/Models/` — task data model
-
-This keeps behavior consistent across both interfaces.
-
-## Data Storage
-
-- `tasks_for_days.json` — JSON storage
-- `tasks_for_days.txt` — plain-text storage
-- `*.bac` — backup files
-- `*.hash` — SHA-256 integrity files
-
-If data is changed externally and integrity check fails, the app restores from backup automatically.
-
-## Requirements
-
-- Python 3.x
-- FastAPI + Uvicorn (only for API version)
-
-## Repository Layout
-
-```text
-to_do_app_txt/
-├── Base_func.py
-├── FastApi/
-├── Business_logic/
-├── Storage_logic/
-├── UI_Console/
-├── flows/
-└── Tkinter/
-```
+This keeps task rules consistent across interfaces.
